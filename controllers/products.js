@@ -12,9 +12,8 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-    let productId = req.params.productId;
-    Product.findItem(productId, product => {
-        Product.edit(product.id, req.body.title, req.body.desc, req.body.price, req.body.imageUrl);
+    Product.findItem(req.body.id, product => {
+        Product.edit(req.body.id, req.body.title, req.body.desc, req.body.price, req.body.imageUrl);
         res.redirect('/admin/products');
     })
 };
