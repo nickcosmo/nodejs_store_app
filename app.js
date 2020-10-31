@@ -13,7 +13,7 @@ const shopRoutes = require('./routes/shop');
 const notFoundPage = require('./controllers/404.js');
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); //serve static files
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);

@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const path = require('path');
 
@@ -9,14 +8,19 @@ let getFileData = (cb) => {
         if (err) {
             cb([]);
         } else {
-            cb(JSON.parse(data)); // need to parse data so it returns as an array!
+            if(data) {
+                cb(JSON.parse(data)); // need to parse data so it returns as an array!
+            }
         }
     })
 };
 
 module.exports = class Product {
-    constructor(title) {
+    constructor(title, imageUrl, desc, price) {
         this.title = title;
+        this.imageUrl = imageUrl;
+        this.desc = desc;
+        this.price = price;
     }
 
     save() {
