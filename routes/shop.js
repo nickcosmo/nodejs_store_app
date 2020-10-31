@@ -18,6 +18,12 @@ router.get('/products', productsController.getProducts);
 // /cart => GET
 router.get('/cart', shopController.getCart);
 
+// /cart => POST
+router.post('/cart', shopController.postToCart)
+
+// /products/productId => GET
+router.get('/products/:productId', shopController.getProductDetails);
+
 // /checkout => GET
 router.get('/checkout', shopController.getCheckout);
 
