@@ -18,6 +18,9 @@ router.get('/edit-product/:productId', productsController.getEditProduct);
 // /admin/edit-product => POST
 router.post('/edit-product', productsController.postEditProduct);
 
+// /admin/delete-product => GET
+router.get('/delete-product/:productId', productsController.deleteProduct);
+
 // /admin/products => GET
 router.get('/products', productsController.getProductsAdmin);
 

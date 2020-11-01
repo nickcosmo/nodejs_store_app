@@ -18,6 +18,12 @@ exports.postEditProduct = (req, res, next) => {
     })
 };
 
+exports.deleteProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    Product.delete(prodId);
+    res.redirect('/admin/products');
+};
+
 exports.postProduct = (req, res, next) => {
     const title = req.body.title;
     const imageUrl = req.body.imageUrl;
