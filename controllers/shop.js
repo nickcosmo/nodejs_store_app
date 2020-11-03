@@ -2,10 +2,11 @@ const Product = require('../models/product.js');
 const Cart = require('../models/cart.js');
 
 exports.getIndex = (req, res, err) => {
-    Product.fetchAll(products => {
+    Product.findAll()
+    .then(products => {
         const shopFile = 'shop/index.ejs';
-        res.render(shopFile, { prods: products, docTitle: 'Index', path: 'index' });
-    });
+        res.render(shopFile, { prods: products, docTitle: 'Index', path: 'index' })
+    }).catch(err => console.log(err));
 };
 
 exports.getCart = (req, res, err) => {
@@ -60,11 +61,13 @@ exports.getOrders = (req, res, err) => {
 
 exports.getProductDetails = (req, res, err) => {
     const prodId = req.params.productId;
-    Product.findItem(prodId, product => {
-        res.render('shop/product-detail.ejs', {
-            path: 'product-detail',
-            docTitle: 'Product Details',
-            product: product,
+    Product.findByPk(prodId)
+        .then(product => {
+            res.render('shop/product-detail.ejs', {
+                path: 'product-detail',
+                docTitle: 'Product Details',
+                product: product,
+            })
         })
-    });
+        .catch(err => console.log(err));
 };
