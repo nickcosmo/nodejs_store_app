@@ -7,7 +7,10 @@
 
     <main>
         <% if (products.length > 0) { %>
-        <h2 class='totalPrice'>Total Price: <%= totalPrice %></h2>
+        <form class='form-control' action="/orders" method="POST">
+            <h2 class='totalPrice'>Total Price: <%= totalPrice %></h2>
+            <button class='btn edit' type="submit">Checkout!</button>
+        </form>
         <div class="grid">
             <% products.forEach(product => { %>
             <article class="card product-item">
@@ -20,7 +23,7 @@
                 <div class="card__content">
                     <h2 class="product__price">$<%= product.price %></h2>
                     <p class="product__description"><%= product.description %></p>
-                    <h2 class="product__price"><%= product.qty %> in cart</h2>
+                    <h2 class="product__price"><%= product.cartItem.quantity %> in cart</h2>
                 </div>
                 <div class="card__actions">
                     <form action="/remove-item" method="POST">
@@ -32,6 +35,7 @@
             </article>
             <% }) %>
         </div>
+
         <% } else { %>
         <h2>Cart is Empty!!</h2>
         <% } %>

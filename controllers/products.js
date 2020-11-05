@@ -42,12 +42,14 @@ exports.postProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const desc = req.body.desc;
     const price = req.body.price;
+    const user = req.user.id;
 
     Product.create({
         title: title,
         imageUrl: imageUrl,
         price: price,
-        description: desc
+        description: desc,
+        userId: user,
     }).then(data => res.redirect('/')).catch(err => console.log(err));   
 };
 
