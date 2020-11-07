@@ -6,35 +6,34 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
     let productId = req.params.productId;
-    Product.findByPk(productId)
+    Product.findProduct(productId)
         .then(product => {
             res.render('admin/edit-product.ejs', { product: product, docTitle: `Edit ${product.title}`, path: 'edit-product' });
         }).catch(err => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
-    Product.findByPk(req.body.id)
+    const newData = {
+        title: req.body.title,
+        description: req.body.desc,
+        price: req.body.price,
+        imageUrl: req.body.imageUrl,
+    }
+    
+    Product.editProduct(req.body.id, newData)
         .then(product => {
-            product.title = req.body.title;
-            product.description = req.body.desc;
-            product.price = req.body.price;
-            product.imageUrl = req.body.imageUrl;
-            return product.save();
-        })
-        .then(result => {
             res.redirect('/admin/products');
         }).catch(err => console.log(err))
 };
 
 exports.deleteProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.findByPk(prodId)
+    Product.deleteProduct(prodId)
     .then(product => {
-        return product.destroy();
-    })
-    .then(result => {
+        console.log('deleted');
         res.redirect('/admin/products');
-    }).catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
 };
 
 exports.postProduct = (req, res, next) => {
@@ -42,18 +41,13 @@ exports.postProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const desc = req.body.desc;
     const price = req.body.price;
-    const user = req.user.id;
 
-    Product.create({
-        title: title,
-        imageUrl: imageUrl,
-        price: price,
-        description: desc,
-        userId: user,
-    }).then(data => res.redirect('/')).catch(err => console.log(err));   
+    const product = new Product(title, price, desc, imageUrl);
+
+    product.save().then(data => res.redirect('/')).catch(err => console.log(err));   
 };
 
-exports.getProducts = (req, res, next) => {
+exports.getProducts = (req, res, next) => {    
     Product.findAll()
     .then(products => {
         const shopFile = 'shop/product-list.ejs';

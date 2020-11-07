@@ -115,7 +115,7 @@ exports.postToOrders = (req, res, err) => {
 
 exports.getProductDetails = (req, res, err) => {
     const prodId = req.params.productId;
-    Product.findByPk(prodId)
+    Product.findProduct(prodId)
         .then(product => {
             res.render('shop/product-detail.ejs', {
                 path: 'product-detail',
