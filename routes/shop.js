@@ -22,7 +22,7 @@ router.get('/cart', shopController.getCart);
 router.post('/cart', shopController.postToCart)
 
 // /remove-item => POST
-// router.post('/remove-item', shopController.removeFromCart)
+router.post('/remove-item', shopController.removeFromCart)
 
 // /products/productId => GET
 router.get('/products/:productId', shopController.getProductDetails);
@@ -31,9 +31,9 @@ router.get('/products/:productId', shopController.getProductDetails);
 // router.get('/checkout', shopController.getCheckout);
 
 // /orders => GET
-// router.get('/orders', shopController.getOrders);
+router.get('/orders', shopController.getOrders);
 
 // /orders => POST
-// router.post('/orders', shopController.postToOrders);
+router.post('/orders', shopController.postToOrders);
 
 module.exports = router;

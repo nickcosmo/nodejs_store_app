@@ -10,6 +10,7 @@
         <form class='form-control' action="/orders" method="POST">
             <h2 class='totalPrice'>Total Price: <%= totalPrice %></h2>
             <button class='btn edit' type="submit">Checkout!</button>
+            <input type="hidden" name="totalPrice" value="<%= totalPrice %>">
         </form>
         <div class="grid">
             <% products.forEach(product => { %>
@@ -23,13 +24,12 @@
                 <div class="card__content">
                     <h2 class="product__price">$<%= product.price %></h2>
                     <p class="product__description"><%= product.description %></p>
-                    <h2 class="product__price"><%= product.cartItem.quantity %> in cart</h2>
+                    <h2 class="product__price"><%= product.quantity %> in cart</h2>
                 </div>
                 <div class="card__actions">
                     <form action="/remove-item" method="POST">
                         <button class='btn edit' type="submit">Delete</button>
-                        <input type="hidden" name="productId" value="<%= product.id %>">
-                        <input type="hidden" name="productPrice" value="<%= product.price %>">
+                        <input type="hidden" name="productId" value="<%= product._id %>">
                     </form>
                 </div>
             </article>

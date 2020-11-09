@@ -9,35 +9,25 @@ exports.getIndex = (req, res, err) => {
 };
 
 exports.getCart = (req, res, err) => {
-    req.user.getCart()
-        .then(cart => {
-            return cart.getProducts()
-                .then(products => {
-                    let totalPrice = 0;
-                    products.forEach(product => {
-                        totalPrice += product.price * product.cartItem.quantity;
-                    });
-                    res.render('shop/cart.ejs', {
-                        path: 'cart',
-                        docTitle: 'Cart',
-                        products: this.cart,
-                        totalPrice: totalPrice.toFixed(2)
-                    })
-                })
-                .catch(err => console.log(err))
-        })
-        .catch(err => console.log(err))
+    req.user.getCart(req.user._id)
+        .then((cart) => {
+            let totalPrice = 0;
+            cart.forEach(product => {
+                totalPrice += product.price * product.quantity;
+            });
+            res.render('shop/cart.ejs', {
+                path: 'cart',
+                docTitle: 'Cart',
+                products: cart,
+                totalPrice: totalPrice.toFixed(2)
+            })
+        }).catch(err => console.log(err));
 };
 
 exports.removeFromCart = (req, res, err) => {
     const prodId = req.body.productId;
-    req.user.getCart()
-        .then(cart => {
-            return cart.getProducts({ where: { id: prodId } })
-        }).then(products => {
-            const product = products[0];
-            return product.cartItem.destroy();
-        }).then(result => {
+    req.user.deleteCartItem(prodId)
+        .then(() => {
             res.redirect('/cart');
         })
         .catch(err => console.log(err))
@@ -53,19 +43,10 @@ exports.postToCart = (req, res, err) => {
                 .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
-
-
-// }
-
-// exports.getCheckout = (req, res, err) => {
-//     res.render('shop/checkout', {
-//         path: 'checkout',
-//         docTitle: 'Checkout'
-//     })
 };
 
 exports.getOrders = (req, res, err) => {
-    req.user.getOrders({ include: ['products'] })
+    req.user.getOrders()
         .then(orders => {
             res.render('shop/orders.ejs', {
                 path: 'orders',
@@ -76,23 +57,8 @@ exports.getOrders = (req, res, err) => {
 };
 
 exports.postToOrders = (req, res, err) => {
-    let myCart;
-    req.user.getCart()
-        .then(cart => {
-            myCart = cart;
-            return cart.getProducts();
-        })
-        .then(products => {
-            return req.user.createOrder()
-                .then(order => {
-                    return order.addProducts(products.map(product => {
-                        product.orderItem = { quantity: product.cartItem.quantity };
-                        return product;
-                    })).then().catch(err => console.log(err));
-                }).catch(err => console.log(err));
-        }).then(result => {
-            return myCart.setProducts(null);
-        }).then(result => {
+    req.user.addOrder(req.body.totalPrice)
+        .then(result => {
             res.redirect('/orders');
         }).catch(err => console.log(err));
 };

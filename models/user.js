@@ -57,6 +57,68 @@ class User {
             })
             .catch(err => console.log(err));
     }
+
+    getCart() {
+        const db = getDb();
+        const productIds = this.cart.map(i => {
+            return i._id;
+        });
+
+        return db.collection('products').find({ _id: { $in: productIds } }).toArray()
+            .then(products => {
+                return products.map(p => {
+                    return {
+                        ...p, quantity: this.cart.find(j => {
+                            return j._id.toString() === p._id.toString();
+                        }).quantity
+                    };
+                });
+            }).catch(err => console.log(err));
+    }
+
+    deleteCartItem(productId) {
+        const db = getDb();
+        const updatedCart = this.cart.filter(product => {
+            return product._id.toString() !== productId.toString();
+        });
+
+        return db.collection('users').updateOne(
+            { _id: new mongodb.ObjectId(this._id) },
+            { $set: { cart: updatedCart } })
+            .then()
+            .catch(err => console.log(err));
+    }
+
+    addOrder(price) {
+        const db = getDb();
+        return this.getCart().then(products => {
+            const cart = {
+                items: products,
+                price: price,
+                user: {
+                    name: this.name,
+                    _id: new mongodb.ObjectId(this._id),
+                }
+            };
+            return db.collection('orders').insertOne(cart)
+                .then(result => {
+                    this.cart = [];
+                    return db.collection('users').updateOne(
+                        { _id: new mongodb.ObjectId(this._id) },
+                        { $set: { cart: this.cart, userId: this._id } })
+                }).catch(err => console.log(err));
+        });
+
+
+    }
+
+    getOrders() {
+        const db = getDb();
+        return db.collection('orders').find({ 'user._id': new mongodb.ObjectId(this._id) }).toArray()
+            .then(orders => {
+                return orders;
+            }).catch(err => console.log(err));
+    }
 };
 
 module.exports = User;
