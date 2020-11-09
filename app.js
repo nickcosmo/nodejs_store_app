@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const mongoConnect = require('./util/database.js').mongoConnect;
+const User = require('./models/user.js');
 
 const app = express();
 
@@ -18,17 +19,16 @@ app.use(bodyParser.urlencoded({ extended: false })); // add 3rd party bodyparsin
 app.use(express.static(path.join(__dirname, 'public'))); //serve static files
 
 app.use((req, res, next) => {
-    // User.findByPk(1)
-    //     .then(user => {
-    //         req.user = user;
+    User.findUser('5fa8424fc8c107bb643cad6d')
+        .then(user => {
+            req.user = new User(user.name, user.email, user.cart, user._id);
             next();
-    //     }).catch(err => console(err))
+        }).catch(err => console(err));
 });
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 app.use(notFoundPage.notFound);
-
 
 mongoConnect(()=> {
     app.listen(3000);

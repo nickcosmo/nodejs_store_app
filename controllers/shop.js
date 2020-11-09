@@ -20,7 +20,7 @@ exports.getCart = (req, res, err) => {
                     res.render('shop/cart.ejs', {
                         path: 'cart',
                         docTitle: 'Cart',
-                        products: products,
+                        products: this.cart,
                         totalPrice: totalPrice.toFixed(2)
                     })
                 })
@@ -45,39 +45,23 @@ exports.removeFromCart = (req, res, err) => {
 
 exports.postToCart = (req, res, err) => {
     const prodId = req.body.productId;
-    let foundCart;
-    let newQuantity = 1;
-    req.user.getCart()
-        .then(cart => {
-            foundCart = cart;
-            return cart.getProducts({ where: { id: prodId } });
-        })
-        .then(products => {
-            let product;
 
-            if (products.length > 0) {
-                product = products[0];
-            }
-            if (product) {
-                let oldQuantity = product.cartItem.quantity;
-                newQuantity = oldQuantity + 1;
-                return product;
-            }
-            return Product.findByPk(prodId);
-        }).then(product => {
-            return foundCart.addProduct(product, { through: { quantity: newQuantity } })
+    Product.findProduct(prodId)
+        .then(product => {
+            req.user.addToCart(product)
+                .then(() => res.redirect('/cart'))
+                .catch(err => console.log(err));
         })
-        .then(() => {
-            res.redirect('/cart');
-        })
-        .catch(err => console.log(err))
-}
+        .catch(err => console.log(err));
 
-exports.getCheckout = (req, res, err) => {
-    res.render('shop/checkout', {
-        path: 'checkout',
-        docTitle: 'Checkout'
-    })
+
+// }
+
+// exports.getCheckout = (req, res, err) => {
+//     res.render('shop/checkout', {
+//         path: 'checkout',
+//         docTitle: 'Checkout'
+//     })
 };
 
 exports.getOrders = (req, res, err) => {

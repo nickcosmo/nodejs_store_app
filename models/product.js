@@ -1,12 +1,13 @@
 const getDb = require('../util/database').getDb;
 const mongodb = require('mongodb');
 class Product {
-    constructor(title, price, description, imageUrl, id) {
+    constructor(title, price, description, imageUrl, userId) {
         this.title = title;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.id = id ? id : null;
+        this.userId = userId;
+        // this.id = id ? id : null;
     }
 
     save() {
@@ -27,32 +28,33 @@ class Product {
 
     static findProduct(id) {
         const db = getDb();
-        return db.collection('products').find({_id: new mongodb.ObjectId(id)}).next()
-        .then(product => {
-            return product;
-        })
-        .catch(err => console.log(err));
+        return db.collection('products').find({ _id: new mongodb.ObjectId(id) }).next()
+            .then(product => {
+                return product;
+            })
+            .catch(err => console.log(err));
     }
 
     static deleteProduct(id) {
         const db = getDb();
-        return db.collection('products').deleteOne({_id: new mongodb.ObjectId(id)}).next()
-        .then(product => {
-            console.log(product);
-            return product;
-        })
-        .catch(err => console.log(err));
+        return db.collection('products').deleteOne({ _id: new mongodb.ObjectId(id) })
+            .then(product => {
+                console.log('deleted');
+            })
+            .catch(err => console.log(err));
     }
 
     static editProduct(id, data) {
         const db = getDb();
-        const filter = {_id: new mongodb.ObjectId(id)};
-        const updateDoc = { $set: {
-            title: data.title,
-            price: data.price,
-            description: data.description,
-            imageUrl: data.imageUrl
-        }}
+        const filter = { _id: new mongodb.ObjectId(id) };
+        const updateDoc = {
+            $set: {
+                title: data.title,
+                price: data.price,
+                description: data.description,
+                imageUrl: data.imageUrl
+            }
+        }
 
         return db.collection('products').updateOne(filter, updateDoc)
             .then()

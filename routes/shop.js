@@ -16,10 +16,10 @@ router.get('/', shopController.getIndex);
 router.get('/products', productsController.getProducts);
 
 // /cart => GET
-// router.get('/cart', shopController.getCart);
+router.get('/cart', shopController.getCart);
 
 // /cart => POST
-// router.post('/cart', shopController.postToCart)
+router.post('/cart', shopController.postToCart)
 
 // /remove-item => POST
 // router.post('/remove-item', shopController.removeFromCart)
