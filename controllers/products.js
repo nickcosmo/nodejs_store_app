@@ -40,9 +40,8 @@ exports.postProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const desc = req.body.desc;
     const price = req.body.price;
-    const userId = req.user._id;
-
-    const product = new Product(title, price, desc, imageUrl, userId);
+    
+    const product = new Product({title: title, price: price, description: desc, imageUrl: imageUrl});
 
     product.save().then(data => res.redirect('/')).catch(err => console.log(err));   
 };
