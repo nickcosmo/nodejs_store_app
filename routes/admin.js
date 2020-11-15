@@ -13,15 +13,15 @@ router.get('/add-product', productsController.getAddProduct);
 router.post('/add-product', productsController.postProduct);
 
 // // /admin/edit-product => GET
-// router.get('/edit-product/:productId', productsController.getEditProduct);
+router.get('/edit-product/:productId', productsController.getEditProduct);
 
 // // /admin/edit-product => POST
-// router.post('/edit-product', productsController.postEditProduct);
+router.post('/edit-product', productsController.postEditProduct);
 
 // // /admin/delete-product => GET
-// router.get('/delete-product/:productId', productsController.deleteProduct);
+router.get('/delete-product/:productId', productsController.deleteProduct);
 
 // // /admin/products => GET
-// router.get('/products', productsController.getProductsAdmin);
+router.get('/products', productsController.getProductsAdmin);
 
 exports.routes = router;

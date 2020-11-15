@@ -6,33 +6,38 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
     let productId = req.params.productId;
-    Product.findProduct(productId)
+    Product.findById(productId)
         .then(product => {
             res.render('admin/edit-product.ejs', { product: product, docTitle: `Edit ${product.title}`, path: 'edit-product' });
         }).catch(err => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
-    const newData = {
-        title: req.body.title,
-        description: req.body.desc,
-        price: req.body.price,
-        imageUrl: req.body.imageUrl,
-    }
-    
-    Product.editProduct(req.body.id, newData)
+    const newTitle = req.body.title;
+    const newDescription = req.body.desc;
+    const newPrice = req.body.price;
+    const newImage = req.body.imageUrl;
+
+    Product.findById(req.body.id)
         .then(product => {
+            product.title = newTitle;
+            product.description = newDescription;
+            product.price = newPrice;
+            product.imageUrl = newImage;
+            return product.save();
+        })
+        .then(() => {
             res.redirect('/admin/products');
         }).catch(err => console.log(err))
 };
 
 exports.deleteProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.deleteProduct(prodId)
-    .then(product => {
-        res.redirect('/admin/products');
-    })
-    .catch(err => console.log(err))
+    Product.findByIdAndRemove(prodId)
+        .then(product => {
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err))
 };
 
 exports.postProduct = (req, res, next) => {
@@ -40,24 +45,24 @@ exports.postProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const desc = req.body.desc;
     const price = req.body.price;
-    
-    const product = new Product({title: title, price: price, description: desc, imageUrl: imageUrl});
 
-    product.save().then(data => res.redirect('/')).catch(err => console.log(err));   
+    const product = new Product({ title: title, price: price, description: desc, imageUrl: imageUrl, userId: req.user._id });
+
+    product.save().then(data => res.redirect('/')).catch(err => console.log(err));
 };
 
-exports.getProducts = (req, res, next) => {    
-    Product.findAll()
-    .then(products => {
-        const shopFile = 'shop/product-list.ejs';
-        res.render(shopFile, { prods: products, docTitle: 'Products', path: 'products' });
-    }).catch(err => console.log(err));
+exports.getProducts = (req, res, next) => {
+    Product.find()
+        .then(products => {
+            const shopFile = 'shop/product-list.ejs';
+            res.render(shopFile, { prods: products, docTitle: 'Products', path: 'products' });
+        }).catch(err => console.log(err));
 };
 
 exports.getProductsAdmin = (req, res, next) => {
-    Product.findAll()
-    .then(products => {
-        const shopFile = 'admin/products.ejs';
-        res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products' });
-    }).catch(err => console.log(err));
+    Product.find()
+        .then(products => {
+            const shopFile = 'admin/products.ejs';
+            res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products' });
+        }).catch(err => console.log(err));
 };

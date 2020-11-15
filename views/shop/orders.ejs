@@ -9,15 +9,17 @@
     <% } else { %>
     <ul>
         <% orders.forEach(order => { %>
-        <li>
-            <h1>Order No. <%= order._id %></h1>
-            <h2>Total: <%= order.price %></h2>
-            <ul>
-                <% order.items.forEach(product => { %>
-                <li><%= product.title %> (<%= product.quantity %>)</li>
-                <% }) %>
-            </ul>
-        </li>
+        <div class="card">
+            <li>
+                <h1 class="card__header">Order No. <%= order._id %></h1>
+                <h2>Total: <%= order.totalPrice %></h2>
+                <ul class='card__content'>
+                    <% order.products.forEach(product => { %>
+                    <li><%= product.product.title %> (<%= product.quantity %>)</li>
+                    <% }) %>
+                </ul>
+            </li>
+        </div>
         <% }) %>
     </ul>
     <% } %>
