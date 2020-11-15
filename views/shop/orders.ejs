@@ -4,25 +4,29 @@
 <body>
     <%- include('../includes/nav.ejs') %>
     </header>
-    <% if(orders.length <= 0) { %>
-    <h1>No Orders!</h1>
-    <% } else { %>
-    <ul>
-        <% orders.forEach(order => { %>
-        <div class="card">
-            <li>
-                <h1 class="card__header">Order No. <%= order._id %></h1>
-                <h2>Total: <%= order.totalPrice %></h2>
-                <ul class='card__content'>
-                    <% order.products.forEach(product => { %>
-                    <li><%= product.product.title %> (<%= product.quantity %>)</li>
-                    <% }) %>
-                </ul>
-            </li>
-        </div>
-        <% }) %>
-    </ul>
-    <% } %>
+    <main>
+        <% if(orders.length <= 0) { %>
+        <h1>No Orders!</h1>
+        <% } else { %>
+        <ul>
+            <% orders.forEach(order => { %>
+            <div class="card">
+                <li  class="card__header">
+                    <h1 class="product__title">Order No. <%= order._id %></h1>
+                    <h2 class="product__price">Total: <%= order.totalPrice %></h2>
+                    <hr>
+                    <h2 class="product__title">Order Contents</h2>
+                    <ul class='card__content'>
+                        <% order.products.forEach(product => { %>
+                        <li class="product__description"><%= product.product.title %> (<%= product.quantity %>)</li>
+                        <% }) %>
+                    </ul>
+                </li>
+            </div>
+            <% }) %>
+        </ul>
+        <% } %>
+    </main>
 </body>
 
 </html>

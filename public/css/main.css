@@ -58,13 +58,20 @@ main {
   align-items: stretch;
 }
 
+ul {
+  padding: 0px;
+}
+
 .card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  max-width: 400px;
+  margin: auto;
 }
 
 .card__header,
 .card__content {
   padding: 1rem;
+  list-style-type: none;
 }
 
 .card__header h1,
