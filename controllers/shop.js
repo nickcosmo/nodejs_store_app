@@ -6,7 +6,7 @@ exports.getIndex = (req, res, err) => {
     Product.find()
         .then(products => {
             const shopFile = 'shop/index.ejs';
-            res.render(shopFile, { prods: products, docTitle: 'Index', path: 'index' })
+            res.render(shopFile, { prods: products, docTitle: 'Index', path: 'index', loggedStatus: req.session.loggedStatus })
         }).catch(err => console.log(err));
 };
 
@@ -22,7 +22,8 @@ exports.getCart = (req, res, err) => {
                 path: 'cart',
                 docTitle: 'Cart',
                 products: products,
-                totalPrice: totalPrice.toFixed(2)
+                totalPrice: totalPrice.toFixed(2),
+                loggedStatus: req.session.loggedStatus
             })
         }).catch(err => console.log(err));
 };
@@ -54,7 +55,8 @@ exports.getOrders = (req, res, err) => {
             res.render('shop/orders.ejs', {
                 path: 'orders',
                 docTitle: 'Orders',
-                orders: orders
+                orders: orders,
+                loggedStatus: req.session.loggedStatus
             })
         }).catch(err => console.log(err));
 };
@@ -89,6 +91,7 @@ exports.getProductDetails = (req, res, err) => {
                 path: 'product-detail',
                 docTitle: 'Product Details',
                 product: product,
+                loggedStatus: req.session.loggedStatus
             })
         })
         .catch(err => console.log(err));

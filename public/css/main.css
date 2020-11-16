@@ -24,8 +24,10 @@ main {
 
 .main-header__nav {
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .main-header__item-list {
@@ -40,12 +42,18 @@ main {
   padding: 0;
 }
 
-.main-header__item a {
+.main-header__item a,
+.main-header__item button {
   text-decoration: none;
   color: white;
+  border: none;
+  background-color: #00695c;
+  font: inherit;
+  cursor: pointer;
 }
 
 .main-header__item a:hover,
+.main-header__item button:hover,
 .main-header__item a:active,
 .main-header__item a.active {
   color: #ffeb3b;
@@ -60,6 +68,7 @@ main {
 
 ul {
   padding: 0px;
+  list-style-type: none;
 }
 
 .card {

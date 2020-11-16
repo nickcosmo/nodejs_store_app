@@ -1,14 +1,14 @@
 const Product = require('../models/product.js');
 
 exports.getAddProduct = (req, res, next) => {
-    res.render('admin/add-product.ejs', { docTitle: 'Add Product Page', path: 'add-product' });
+    res.render('admin/add-product.ejs', { docTitle: 'Add Product Page', path: 'add-product', loggedStatus: req.session.loggedStatus });
 };
 
 exports.getEditProduct = (req, res, next) => {
     let productId = req.params.productId;
     Product.findById(productId)
         .then(product => {
-            res.render('admin/edit-product.ejs', { product: product, docTitle: `Edit ${product.title}`, path: 'edit-product' });
+            res.render('admin/edit-product.ejs', { product: product, docTitle: `Edit ${product.title}`, path: 'edit-product', loggedStatus: req.session.loggedStatus });
         }).catch(err => console.log(err));
 };
 
@@ -55,7 +55,7 @@ exports.getProducts = (req, res, next) => {
     Product.find()
         .then(products => {
             const shopFile = 'shop/product-list.ejs';
-            res.render(shopFile, { prods: products, docTitle: 'Products', path: 'products' });
+            res.render(shopFile, { prods: products, docTitle: 'Products', path: 'products', loggedStatus: req.session.loggedStatus });
         }).catch(err => console.log(err));
 };
 
@@ -63,6 +63,6 @@ exports.getProductsAdmin = (req, res, next) => {
     Product.find()
         .then(products => {
             const shopFile = 'admin/products.ejs';
-            res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products' });
+            res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products', loggedStatus: req.session.loggedStatus });
         }).catch(err => console.log(err));
 };
