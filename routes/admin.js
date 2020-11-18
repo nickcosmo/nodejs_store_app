@@ -34,4 +34,11 @@ router.post('/login', authController.postLogin);
 // /admin/logout => POST
 router.post('/logout', authController.postLogout);
 
+// /admin/signup => GET
+router.get('/signup', authController.getSignup);
+
+// /admin/signup => POST
+router.post('/signup', authController.postSignup);
+
+
 exports.routes = router;

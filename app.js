@@ -44,14 +44,8 @@ app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 app.use(notFoundPage.notFound);
 
-mongoose.connect('mongodb+srv://nicklans:cv9u1mCtx7ctq6k3@cluster0.9g3si.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(MONGODB_URI)
     .then(() => {
-        User.findOne().then(user => {
-            if (!user) {
-                const user = new User({ name: 'Nick', email: 'test@test.com', cart: { items: [] } });
-                user.save();
-            }
-            app.listen(3000);
-            console.log('connected!');
-        })
+        app.listen(3000);
+        console.log('connected!');
     }).catch(err => console.log(err));
