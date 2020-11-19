@@ -3,10 +3,17 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user.js');
 
 exports.getLogin = (req, res, next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message = message;
+    } else {
+        message = null;
+    }
     res.render('admin/login.ejs', {
         path: 'login',
         docTitle: 'Login',
-        loggedStatus: req.session.loggedStatus
+        loggedStatus: req.session.loggedStatus,
+        errorMessage: message
     })
 }
 
@@ -16,7 +23,8 @@ exports.postLogin = (req, res, next) => {
     User.findOne({email: email})
     .then(user => {
         if(!user) {
-            return res.redirect('admin/login');
+            req.flash('error', 'invalid email or password');
+            return res.redirect('/admin/login');
         }
 
         bcrypt.compare(password, user.password).then(matchResult => {
@@ -24,7 +32,8 @@ exports.postLogin = (req, res, next) => {
                 req.session.loggedStatus = true;
                 req.session.user = user;
                 return req.session.save(err => {
-                    console.log(err);
+                    if(err) {console.log(err)};
+                    req.flash('error', 'invalid email or password');
                     return res.redirect('/');
                 });
             }
@@ -39,21 +48,28 @@ exports.postLogout = (req, res, next) => {
 }
 
 exports.getSignup = (req, res, next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message = message;
+    } else {
+        message = null;
+    }
     res.render('admin/signup.ejs', {
         path: 'signup',
         docTitle: 'Signup',
-        loggedStatus: req.session.loggedStatus
+        loggedStatus: req.session.loggedStatus,
+        errorMessage: message
     })
 }
 
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
 
     User.findOne({email: email})
         .then(user => {
             if(user) {
+                req.flash('error', 'user already exists. please use different credentials!');
                 return res.redirect('/admin/signup');
             }
             return bcrypt.hash(password, 12)

@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDbStore = require('connect-mongodb-session')(session);
+const flash = require('connect-flash');
+// const csrf = require('csurf');
 
 // const mongoConnect = require('./util/database.js').mongoConnect;
 const User = require('./models/user.js');
@@ -27,6 +29,7 @@ const notFoundPage = require('./controllers/404.js');
 app.use(bodyParser.urlencoded({ extended: false })); // add 3rd party bodyparsing package
 app.use(express.static(path.join(__dirname, 'public'))); //serve static files
 app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }));
+app.use(flash());
 
 app.use((req, res, next) => {
     if(!req.session.user) {

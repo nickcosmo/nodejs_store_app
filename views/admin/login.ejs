@@ -6,6 +6,9 @@
     </header>
 
     <main>
+        <% if(errorMessage) { %>
+            <div class="message message-error"><%= errorMessage %></div>
+        <% } %>
         <form class="product-form" action="/admin/login" method="POST">
             <div class="form-control">
                 <label for="email">Email</label>

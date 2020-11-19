@@ -124,3 +124,16 @@ ul {
   background-color: #00695c;
   color: white;
 }
+
+.message {
+  margin: auto;
+  width: 35%;
+  border: 2px solid #0e1113;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.message-error {
+  border-color: red;
+  background-color: rgb(253, 138, 138);
+}
