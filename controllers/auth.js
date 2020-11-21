@@ -1,6 +1,16 @@
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
+// const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
+const mailTransport = require('nodemailer-sendgrid-transport');
 
 const User = require('../models/user.js');
+
+const transporter = nodemailer.createTransport(mailTransport({
+    auth: {
+        api_key: process.env.SENDGRID_USERKEY,
+    }
+}));
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
@@ -82,7 +92,31 @@ exports.postSignup = (req, res, next) => {
                     return newUser.save();
                 }).then(result => {
                     res.redirect('/admin/login');
+                    return transporter.sendMail({
+                        to: email,
+                        from: process.env.VERIFIED_SENDER,
+                        subject: 'Signup Successful',
+                        html: '<h1>Signup was successful!</h1>'
+                    });
+                }).catch(err => {
+                    console.log(err);
                 });
             })
             .catch(err => console.log(err));
+}
+
+exports.getResetPassword = (req, res, next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message = message;
+    } else {
+        message = null;
+    }
+    
+    res.render('admin/reset-password.ejs', {
+        path: 'reset-password',
+        docTitle: 'Reset Password',
+        loggedStatus: req.session.loggedStatus,
+        errorMessage: message
+    })
 }

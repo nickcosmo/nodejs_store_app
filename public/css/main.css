@@ -137,3 +137,7 @@ ul {
   border-color: red;
   background-color: rgb(253, 138, 138);
 }
+
+.centered {
+  text-align: center;
+}
