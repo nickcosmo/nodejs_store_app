@@ -14,6 +14,14 @@ const userSchema = new Schema({
     cart: {
         items: [{ productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, quantity: { type: Number, required: true } }],
     },
+    resetToken: {
+        type: String,
+        required: false
+    },
+    resetTokenExp: {
+        type: Date,
+        required: false
+    }
 });
 
 userSchema.methods.addToCart = function (newCartProduct) {

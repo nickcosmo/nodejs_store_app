@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const sgMail = require('@sendgrid/mail');
@@ -5,6 +6,7 @@ const sgMail = require('@sendgrid/mail');
 // const mailTransport = require('nodemailer-sendgrid-transport');
 
 const User = require('../models/user.js');
+const user = require('../models/user.js');
 
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
@@ -123,4 +125,79 @@ exports.getResetPassword = (req, res, next) => {
         loggedStatus: req.session.loggedStatus,
         errorMessage: message
     })
+}
+
+exports.postResetPassword = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if(err) {
+            console.log(err);
+            return res.redirect('/reset');
+        }
+        const token = buffer.toString('hex');
+        User.findOne({email: req.body.email})
+            .then(user => {
+                if(!user) {
+                    req.flash('error', 'No account found!');
+                    return res.redirect('/admin/reset-password');
+                };
+                user.resetToken = token;
+                user.resetTokenExp = Date.now() + 3600000;
+                return user.save();
+            })
+            .then(result => {
+                res.redirect('/');
+                return sgMail.send({
+                    to: req.body.email,
+                    from: process.env.VERIFIED_SENDER,
+                    subject: 'Password Reset',
+                    text: 'You requested a password reset',
+                    html: `
+                    <h1>Password Reset</h1>
+                    <p>click <a href="http://localhost:3000/admin/update-password/${token}">here</a> to reset password</p>
+                    `
+                });
+            })
+            .catch(err => console.log(err));
+    });
+}
+
+exports.getUpdatePassword = (req, res, next) => {
+    const token = req.params.token;
+    User.findOne({resetToken: token, resetTokenExp: {$gt: Date.now()}})
+        .then(user => {
+            let message = req.flash('error');
+            if(message.length > 0) {
+                message = message;
+            } else {
+                message = null;
+            }
+            
+            res.render('admin/update-password.ejs', {
+                path: 'update-password',
+                docTitle: 'Update Password',
+                loggedStatus: req.session.loggedStatus,
+                errorMessage: message,
+                userId: user._id.toString(),
+                token: token
+            })
+        }).catch(err => console.log(err));
+}
+
+exports.postUpdatePassword = (req, res, next) => {
+    const userId = req.body.userId;
+    const token = req.params.token;
+    const newPassword = req.body.newPassword;
+
+    User.findOne({_id: userId, resetToken: token, resetTokenExp: {$gt: Date.now()}})
+        .then(user => {
+            bcrypt.hash(newPassword, 12)
+            .then(hashedPassword => {
+                user.password = hashedPassword;
+                return user.save();
+            })
+        })
+        .then(result => {
+            res.redirect('/admin/login');
+        })
+        .catch(err => console.log(err));
 }

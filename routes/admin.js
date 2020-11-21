@@ -41,8 +41,16 @@ router.get('/signup', authController.getSignup);
 // /admin/signup => POST
 router.post('/signup', authController.postSignup);
 
-// /admin/signup => GET
+// /admin/reset-password => GET
 router.get('/reset-password', authController.getResetPassword);
 
+// /admin/reset-password => POST
+router.post('/reset-password', authController.postResetPassword);
+
+// /admin/update-password => GET
+router.get('/update-password/:token', authController.getUpdatePassword);
+
+// /admin/update-password => POST
+router.post('/update-password/:token', authController.postUpdatePassword);
 
 exports.routes = router;
