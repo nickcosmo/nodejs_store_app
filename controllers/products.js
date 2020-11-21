@@ -20,14 +20,17 @@ exports.postEditProduct = (req, res, next) => {
 
     Product.findById(req.body.id)
         .then(product => {
+            if(product.userId !== req.user._id){
+                return res.redirect('/');
+            }
             product.title = newTitle;
             product.description = newDescription;
             product.price = newPrice;
             product.imageUrl = newImage;
-            return product.save();
-        })
-        .then(() => {
-            res.redirect('/admin/products');
+            return product.save()
+                .then(() => {
+                    res.redirect('/admin/products');
+                })
         }).catch(err => console.log(err))
 };
 
@@ -60,7 +63,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProductsAdmin = (req, res, next) => {
-    Product.find()
+    Product.find({userId: req.user._id})
         .then(products => {
             const shopFile = 'admin/products.ejs';
             res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products', loggedStatus: req.session.loggedStatus });
