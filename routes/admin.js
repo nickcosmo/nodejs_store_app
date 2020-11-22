@@ -1,6 +1,6 @@
 const path = require('path');
-
 const express = require('express');
+const { check, body } = require('express-validator/check');
 
 const productsController = require('../controllers/products');
 const authController = require('../controllers/auth');
@@ -30,7 +30,10 @@ router.get('/products', isAuth, productsController.getProductsAdmin);
 router.get('/login', authController.getLogin);
 
 // /admin/login => POST
-router.post('/login', authController.postLogin);
+router.post('/login', [
+    check('email').isEmail().withMessage('Invalid email'),
+    check('password', 'Invalid Password').isLength({ min: 5 }).isAlphanumeric()
+], authController.postLogin);
 
 // /admin/logout => POST
 router.post('/logout', authController.postLogout);
@@ -39,7 +42,16 @@ router.post('/logout', authController.postLogout);
 router.get('/signup', authController.getSignup);
 
 // /admin/signup => POST
-router.post('/signup', authController.postSignup);
+router.post('/signup', [
+    check('email').isEmail().withMessage('Invalid email'),
+    check('password', 'Password needs to be at least 5 characters').isLength({ min: 5 }).isAlphanumeric(),
+    body('confirmPassword').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Password confirmation failed. Make sure the confirmed password is the same');
+        }
+        return true;
+    })
+], authController.postSignup);
 
 // /admin/reset-password => GET
 router.get('/reset-password', authController.getResetPassword);

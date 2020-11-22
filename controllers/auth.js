@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const sgMail = require('@sendgrid/mail');
+const { validationResult } = require('express-validator/check');
 // const nodemailer = require('nodemailer');
 // const mailTransport = require('nodemailer-sendgrid-transport');
 
@@ -19,7 +20,7 @@ sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
-    if(message.length > 0) {
+    if (message.length > 0) {
         message = message;
     } else {
         message = null;
@@ -35,36 +36,47 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    User.findOne({email: email})
-    .then(user => {
-        if(!user) {
-            req.flash('error', 'invalid email or password');
-            return res.redirect('/admin/login');
-        }
+    const errors = validationResult(req);
 
-        bcrypt.compare(password, user.password).then(matchResult => {
-            if(matchResult === true) {
-                req.session.loggedStatus = true;
-                req.session.user = user;
-                return req.session.save(err => {
-                    if(err) {console.log(err)};
-                    req.flash('error', 'invalid email or password');
-                    return res.redirect('/');
-                });
+    if(!errors.isEmpty()) {
+        return res.status(422).render('admin/login.ejs', {
+            path: 'login',
+            docTitle: 'Login',
+            loggedStatus: req.session.loggedStatus,
+            errorMessage: errors.array()[0].msg
+        })
+    }
+
+    User.findOne({ email: email })
+        .then(user => {
+            if (!user) {
+                req.flash('error', 'invalid email or password');
+                return res.redirect('/admin/login');
             }
-            res.redirect('/admin/login');
-        }).catch(err => console.log(err));
 
-    }).catch(err => console(err));
+            bcrypt.compare(password, user.password).then(matchResult => {
+                if (matchResult === true) {
+                    req.session.loggedStatus = true;
+                    req.session.user = user;
+                    return req.session.save(err => {
+                        if (err) { console.log(err) };
+                        req.flash('error', 'invalid email or password');
+                        return res.redirect('/');
+                    });
+                }
+                res.redirect('/admin/login');
+            }).catch(err => console.log(err));
+
+        }).catch(err => console(err));
 }
 
 exports.postLogout = (req, res, next) => {
-    req.session.destroy(() => {res.redirect('/')});
+    req.session.destroy(() => { res.redirect('/') });
 }
 
 exports.getSignup = (req, res, next) => {
     let message = req.flash('error');
-    if(message.length > 0) {
+    if (message.length > 0) {
         message = message;
     } else {
         message = null;
@@ -80,10 +92,20 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
+    const errors = validationResult(req);
 
-    User.findOne({email: email})
+    if(!errors.isEmpty()) {
+        return res.status(422).render('admin/signup.ejs', {
+            path: 'signup',
+            docTitle: 'Signup',
+            loggedStatus: req.session.loggedStatus,
+            errorMessage: errors.array()[0].msg
+        });
+    }
+
+    User.findOne({ email: email })
         .then(user => {
-            if(user) {
+            if (user) {
                 req.flash('error', 'user already exists. please use different credentials!');
                 return res.redirect('/admin/signup');
             }
@@ -92,7 +114,7 @@ exports.postSignup = (req, res, next) => {
                     const newUser = new User({
                         email: email,
                         password: hashedPassword,
-                        cart: { items: [] } 
+                        cart: { items: [] }
                     });
                     return newUser.save();
                 }).then(result => {
@@ -107,18 +129,18 @@ exports.postSignup = (req, res, next) => {
                 }).catch(err => {
                     console.log(err);
                 });
-            })
-            .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
 }
 
 exports.getResetPassword = (req, res, next) => {
     let message = req.flash('error');
-    if(message.length > 0) {
+    if (message.length > 0) {
         message = message;
     } else {
         message = null;
     }
-    
+
     res.render('admin/reset-password.ejs', {
         path: 'reset-password',
         docTitle: 'Reset Password',
@@ -129,14 +151,14 @@ exports.getResetPassword = (req, res, next) => {
 
 exports.postResetPassword = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
-        if(err) {
+        if (err) {
             console.log(err);
             return res.redirect('/reset');
         }
         const token = buffer.toString('hex');
-        User.findOne({email: req.body.email})
+        User.findOne({ email: req.body.email })
             .then(user => {
-                if(!user) {
+                if (!user) {
                     req.flash('error', 'No account found!');
                     return res.redirect('/admin/reset-password');
                 };
@@ -163,15 +185,15 @@ exports.postResetPassword = (req, res, next) => {
 
 exports.getUpdatePassword = (req, res, next) => {
     const token = req.params.token;
-    User.findOne({resetToken: token, resetTokenExp: {$gt: Date.now()}})
+    User.findOne({ resetToken: token, resetTokenExp: { $gt: Date.now() } })
         .then(user => {
             let message = req.flash('error');
-            if(message.length > 0) {
+            if (message.length > 0) {
                 message = message;
             } else {
                 message = null;
             }
-            
+
             res.render('admin/update-password.ejs', {
                 path: 'update-password',
                 docTitle: 'Update Password',
@@ -188,13 +210,13 @@ exports.postUpdatePassword = (req, res, next) => {
     const token = req.params.token;
     const newPassword = req.body.newPassword;
 
-    User.findOne({_id: userId, resetToken: token, resetTokenExp: {$gt: Date.now()}})
+    User.findOne({ _id: userId, resetToken: token, resetTokenExp: { $gt: Date.now() } })
         .then(user => {
             bcrypt.hash(newPassword, 12)
-            .then(hashedPassword => {
-                user.password = hashedPassword;
-                return user.save();
-            })
+                .then(hashedPassword => {
+                    user.password = hashedPassword;
+                    return user.save();
+                })
         })
         .then(result => {
             res.redirect('/admin/login');
