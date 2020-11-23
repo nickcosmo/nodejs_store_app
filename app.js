@@ -25,7 +25,7 @@ app.set('views', 'views');
 
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const notFoundPage = require('./controllers/404.js');
+const errorPage = require('./controllers/error.js');
 
 app.use(bodyParser.urlencoded({ extended: false })); // add 3rd party bodyparsing package
 app.use(express.static(path.join(__dirname, 'public'))); //serve static files
@@ -39,14 +39,21 @@ app.use((req, res, next) => {
     
     User.findById(req.session.user._id)
     .then(user => {
+        if(!user) {
+            return next();
+        }
         req.user = user;
         next();
-    }).catch(err => console(err));
+    })
+    .catch(err => {
+        throw new Error(err);
+    });
 });
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
-app.use(notFoundPage.notFound);
+app.get('/500', errorPage.systemIssue);
+app.use(errorPage.notFound);
 
 mongoose.connect(MONGODB_URI)
     .then(() => {

@@ -66,8 +66,9 @@ exports.postLogin = (req, res, next) => {
                 }
                 res.redirect('/admin/login');
             }).catch(err => console.log(err));
-
-        }).catch(err => console(err));
+        }).catch(err => { 
+            res.redirect('/500');
+        });
 }
 
 exports.postLogout = (req, res, next) => {
@@ -130,7 +131,9 @@ exports.postSignup = (req, res, next) => {
                     console.log(err);
                 });
         })
-        .catch(err => console.log(err));
+        .catch(err => { 
+            res.redirect('/500');
+        });
 }
 
 exports.getResetPassword = (req, res, next) => {
@@ -179,7 +182,9 @@ exports.postResetPassword = (req, res, next) => {
                     `
                 });
             })
-            .catch(err => console.log(err));
+            .catch(err => { 
+                res.redirect('/500');
+            });
     });
 }
 
@@ -202,7 +207,9 @@ exports.getUpdatePassword = (req, res, next) => {
                 userId: user._id.toString(),
                 token: token
             })
-        }).catch(err => console.log(err));
+        }).catch(err => { 
+            res.redirect('/500');
+        });
 }
 
 exports.postUpdatePassword = (req, res, next) => {
@@ -221,5 +228,7 @@ exports.postUpdatePassword = (req, res, next) => {
         .then(result => {
             res.redirect('/admin/login');
         })
-        .catch(err => console.log(err));
+        .catch(err => { 
+            res.redirect('/500');
+        });
 }

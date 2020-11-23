@@ -9,7 +9,10 @@ exports.getEditProduct = (req, res, next) => {
     Product.findById(productId)
         .then(product => {
             res.render('admin/edit-product.ejs', { product: product, docTitle: `Edit ${product.title}`, path: 'edit-product', loggedStatus: req.session.loggedStatus });
-        }).catch(err => console.log(err));
+        })
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -31,7 +34,10 @@ exports.postEditProduct = (req, res, next) => {
                 .then(() => {
                     res.redirect('/admin/products');
                 })
-        }).catch(err => console.log(err))
+        })
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
 
 exports.deleteProduct = (req, res, next) => {
@@ -40,7 +46,9 @@ exports.deleteProduct = (req, res, next) => {
         .then(product => {
             res.redirect('/admin/products');
         })
-        .catch(err => console.log(err))
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
 
 exports.postProduct = (req, res, next) => {
@@ -51,7 +59,11 @@ exports.postProduct = (req, res, next) => {
 
     const product = new Product({ title: title, price: price, description: desc, imageUrl: imageUrl, userId: req.user._id });
 
-    product.save().then(data => res.redirect('/')).catch(err => console.log(err));
+    product.save()
+        .then(data => res.redirect('/'))
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -59,7 +71,10 @@ exports.getProducts = (req, res, next) => {
         .then(products => {
             const shopFile = 'shop/product-list.ejs';
             res.render(shopFile, { prods: products, docTitle: 'Products', path: 'products', loggedStatus: req.session.loggedStatus });
-        }).catch(err => console.log(err));
+        })
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
 
 exports.getProductsAdmin = (req, res, next) => {
@@ -67,5 +82,8 @@ exports.getProductsAdmin = (req, res, next) => {
         .then(products => {
             const shopFile = 'admin/products.ejs';
             res.render(shopFile, { prods: products, docTitle: 'Admin Products', path: 'admin-products', loggedStatus: req.session.loggedStatus });
-        }).catch(err => console.log(err));
+        })
+        .catch(err => { 
+            res.redirect('/500');
+        });
 };
