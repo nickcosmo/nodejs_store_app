@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-const { check, body } = require('express-validator/check');
+const { check, body } = require('express-validator');
 
 const productsController = require('../controllers/products');
 const authController = require('../controllers/auth');
