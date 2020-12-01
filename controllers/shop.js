@@ -24,7 +24,7 @@ exports.getCart = (req, res, err) => {
                 products: products,
                 totalPrice: totalPrice.toFixed(2),
                 loggedStatus: req.session.loggedStatus,
-                csrfToken: req.csrfToken(),
+                // csrfToken: req.csrfToken(),
             })
         }).catch(err => console.log(err));
 };

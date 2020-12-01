@@ -1,4 +1,5 @@
 const Product = require("../models/product.js");
+const file = require("../util/file.js");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product.ejs", {
@@ -39,6 +40,7 @@ exports.postEditProduct = (req, res, next) => {
       product.description = newDescription;
       product.price = newPrice;
       if(newImage) {
+        file.deleteFile(product.imageUrl);
         product.imageUrl = newImage.path;
       }
       return product.save().then(() => {
@@ -54,6 +56,7 @@ exports.deleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findByIdAndRemove(prodId)
     .then((product) => {
+      file.deleteFile(product.imageUrl);
       res.redirect("/admin/products");
     })
     .catch((err) => {

@@ -7,7 +7,6 @@ const { validationResult } = require("express-validator");
 // const mailTransport = require('nodemailer-sendgrid-transport');
 
 const User = require("../models/user.js");
-const user = require("../models/user.js");
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
